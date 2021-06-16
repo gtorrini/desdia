@@ -1,5 +1,5 @@
 #!/bin/bash
-source ${HOME}/eups/desdm_eups_setup.sh
+source ${HOME}/EUPS_DESDM/y/desdm_eups_setup.sh
 export DES_SERVICES=${HOME}/.desservices.ini
 setup despydb 2.0.6+0
 setup despymisc 1.0.4+5
