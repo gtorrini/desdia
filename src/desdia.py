@@ -6,7 +6,7 @@ from random import randint
 import query, pipeline
 from misc import bash
 
-def start_desdia(pointing,ccd=None,targetra=None,targetdec=None,template_season=6,band='g',work_dir='./work',out_dir=None,threads=1,debug_mode=False,offset=False):
+def start_desdia(pointing,ccd=None,targetra=None,targetdec=None,template_season=3,band='g',work_dir='./work',out_dir=None,threads=1,debug_mode=False,offset=False):
     # Start
     max_threads = 32
     top_dir = None
@@ -43,7 +43,7 @@ def start_desdia(pointing,ccd=None,targetra=None,targetdec=None,template_season=
         if targetra is None and targetdec is None:
             # Load pointings table
             dtype = [('tra',float),('tdec',float),('mjd_obs',float)]
-            data = np.genfromtxt('etc/y6point.csv',delimiter=',',skip_header=1,dtype=dtype)
+            data = np.genfromtxt('/home/s1/gtorrini/offset/desdia/etc/y3point.csv',delimiter=',',skip_header=1,dtype=dtype)
             data = data[int(pointing)] # Get the pointing number
             # Get template filename info at requested pointing
             image_list = query_sci.get_image_info_pointing(data['tra'],data['tdec'],data['mjd_obs'],band=band)

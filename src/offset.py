@@ -716,4 +716,4 @@ def main(dia_dir_path, ccd, band='g'):
 
 ###############################################################################
 # Main function:
-main('C:/Users/Gaby/Documents/DES/SP_2021/PHL_293B_validation/TARGET', 34, 'g')
+main('/data/des80.a/data/gtorrini/1', 34, 'g')

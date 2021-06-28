@@ -1,2 +1,2 @@
-source sourceme.sh
-python ./src/desdia.py "$@"
+source ~/offset/desdia/sourceme.sh
+python ~/offset/desdia/src/desdia.py "$@"
