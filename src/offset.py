@@ -247,7 +247,7 @@ def main(dia_dir_path, ccd, band='g'):
     # diff_path = dia_dir_path + '/*_%s_c%_*_*proj_diff.fits' % (band, ccd)
     diff_path = dia_dir_path + '/*proj_diff.fits'
     diff_files = glob.glob(diff_path)
-    empty_files = []
+    empty_diff = []
     ok_diff = []
    
     # Difference image weights/error:
