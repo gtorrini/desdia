@@ -1,3 +1,3 @@
-./desdia "$@"
+~/offset/desdia/desdia "$@"
 source ~/sourceconda
-#python ./src/offset.py "$@"
+python ~/offset/desdia/src/offset.py "$@"
