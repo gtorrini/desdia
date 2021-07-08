@@ -262,7 +262,7 @@ def sx_mag_err(ap_sum, ap_sum_err, zero_point):
     return merr
     
 # Main function:
-def main(dia_dir_path, nsa_path, ccd, band='g'):
+def main(dia_dir_path, ccd, band='g'):
     start_time = time.time()
     print('---Beginning offset code...---')
     init_size = os.stat(dia_dir_path).st_size
@@ -414,6 +414,7 @@ def main(dia_dir_path, nsa_path, ccd, band='g'):
     temp_sources.add_column(temp_skycoord, name='SkyCoord')
 
     # Get size of each extended source in template image:
+    nsa_path = '/data/des80.a/data/cburke/nsa_v0_1_2.fits'
     nsa_tab = Table.read(nsa_path) # make sure to import table!
     nsa_skycoord = SkyCoord(ra=nsa_tab['RA']*u.deg, dec=nsa_tab['DEC']*u.deg, frame='icrs')
     
@@ -717,4 +718,4 @@ def main(dia_dir_path, nsa_path, ccd, band='g'):
 
 ###############################################################################
 # Main function:
-main('/data/des80.a/data/gtorrini/1', '/data/des80.a/data/cburke/nsa_v0_1_2.fits', 1, 'g')
+main('/data/des80.a/data/gtorrini/16', 16, 'g')
