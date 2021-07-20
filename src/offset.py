@@ -1,6 +1,6 @@
-# For main function input, see line 720
+# For main function input, see line 715
 
-# Last modified 7/7/2021
+# Last modified 7/15/2021
 import os
 import glob
 import math
@@ -269,7 +269,7 @@ def main(dia_dir_path, ccd, band='g'):
     
     ##### READ FITS FILES:
     # Difference images:
-    # diff_path = dia_dir_path + '/*_%s_c%_*_*proj_diff.fits' % (band, ccd)
+    #diff_path = dia_dir_path + '/*_%s_c%d_*_*proj_diff.fits' % (band, ccd)
     diff_path = dia_dir_path + '/*proj_diff.fits'
     diff_files = glob.glob(diff_path)
     empty_diff = []
@@ -570,22 +570,6 @@ def main(dia_dir_path, ccd, band='g'):
     lc_path = ccd_path + "/light_curves"
     os.mkdir(lc_path)
 
-    #snr3 = []
-    #snr4 = []
-    #snr5 = []
-    #avg3 = []
-    #avg4 = []
-    #avg5 = []
-    #sigavg3 = []
-    #sigavg4 = []
-    #sigavg5 = []
-    #rms3 = []
-    #rms4 = []
-    #rms5 = []
-    #sigrms3 = []
-    #sigrms4 = []
-    #sigrms5 = []
-
     # Calculate magnitude of each template image source using pixel counts:
     for i in range(len(temp_sources)):
         temp_phot_ap = SkyCircularAperture(positions=temp_sources['SkyCoord'][i], r=1.5*u.arcsec)
@@ -607,12 +591,7 @@ def main(dia_dir_path, ccd, band='g'):
         temp_merr.append(t_merr)
     tphot_tab.add_column(temp_mags, name='mag_des')
     tphot_tab.add_column(temp_err, name='mag_des_err')
-    
-    # Calibrate temp mags to NSA data to find the zero point between DES & NSA:
-    fiber_mag = 22.5 - 2.5*np.log10(nsa_tab['FIBERFLUX'][3]) # check to make sure it's g-band!
-    fiber_merr = 22.5 - 2.5*np.log10((nsa_tab['FIBERFLUX_IVAR'][3]**(-1/2)))
-    des_to_nsa = fiber_mag - tphot_tab['mag_des']
-    des_to_nsa_err = fiber_merr - tphot_tab['mag_des']
+    tphot_tab.write((pdata_path + '/temp_photometry.csv'), format='ascii.csv')
     
     # For each source, extract data from the difference images:
     print('\t Performing aperture photometry...')
@@ -634,9 +613,9 @@ def main(dia_dir_path, ccd, band='g'):
             
             for k in range(len(ap_mag_og)):
                 ptab.rename_column(ap_names_og[k], ap_names_new[k])
-                ptab[mag_names[k]] = sx_mag(ptab[ap_names_new[k]], zp_decam) + des_to_nsa[i]
+                ptab[mag_names[k]] = sx_mag(ptab[ap_names_new[k]], zp_decam) 
                 ptab.rename_column(ap_err_og[k], ap_err_new[k])
-                ptab[merr_names[k]] = sx_mag_err(ptab[ap_names_new[k]], ptab[ap_err_new[k]], zp_decam) + des_to_nsa_err[i]
+                ptab[merr_names[k]] = sx_mag_err(ptab[ap_names_new[k]], ptab[ap_err_new[k]], zp_decam)
             
             ptab['MJD'] = diff_hdr_set[j]['MJD-OBS']
             ptab = flag_check(ptab)
@@ -672,7 +651,8 @@ def main(dia_dir_path, ccd, band='g'):
                 axes[k].errorbar(flag_mjd, flag_mag[k], yerr=flag_merr[k], ecolor='darkgray', mfc='darkgray', 
                             mec='darkgray', marker='o', ls='', label='Flag')
             axes[k].legend(loc='best', frameon=True, title=leg_labs[k] + "'' Aperture")
-            axes[k].set_ylabel('$g$ magnitude')
+            axes[k].set_ylabel('M_$g$')
+            axes
             if (k==0):
                 axes[k].set_title('Source ' + djnames[i] + ' Light Curve')
             if (k==2):
@@ -711,11 +691,10 @@ def main(dia_dir_path, ccd, band='g'):
     rem_files(all_head)
     postrem_size = os.stat(dia_dir_path).st_size
     print('\t FITS files removed from directory', dia_dir_path, '(total size', (naturalsize(postrem_size) + '). \n'))
-    
     print('---Offset code executed in %.2f minutes--- \n' % float((time.time() - start_time)/60))
     
     return
 
 ###############################################################################
 # Main function:
-main('/data/des80.a/data/gtorrini/16', 16, 'g')
+main('/data/des80.a/data/gtorrini/1256', 1, 'g')
