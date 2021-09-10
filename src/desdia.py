@@ -48,11 +48,17 @@ def start_desdia(pointing,ccd=None,targetra=None,targetdec=None,template_season=
             # Get template filename info at requested pointing
             image_list = query_sci.get_image_info_pointing(data['tra'],data['tdec'],data['mjd_obs'],band=band)
         else:
+            # TODO: RACROSS0 edge case
             # Get template pointing at target
             pointing_list = query_sci.get_pointing_coord(targetra,targetdec,band,template_season)
             # Get template filename info at requested pointing
             image_list = query_sci.get_image_info_pointing(pointing_list['TRADEG'][0],pointing_list['TDECDEG'][0],pointing_list['mjd_obs'][0],band=band)
-            ccd = image_list['ccd'][0]
+            # Restrict to images with just the target
+            if ccd is None:
+                mask_target = (image_list['ramin'] < targetra) & (targetra < image_list['ramax']) & (image_list['decmin'] < targetdec) & (targetdec < image_list['decmax'])
+                ccd = image_list['ccd'][mask_target]
+            else:
+                print('***Warning: You specified a CCD and a target coordinate, which is usually not desired.***')
     if image_list is None:
         print("***No images found in field/tile %s!***" % pointing)
         return
@@ -69,14 +75,14 @@ def start_desdia(pointing,ccd=None,targetra=None,targetdec=None,template_season=
     # Supernova field
     if pointing.startswith('SN-') or pointing.lower() == "cosmos":
         # Here image_list is all image info
-        des_pipeline.run_ccd_sn(image_list,num_threads,template_season,fermigrid)
+        image_list_all = des_pipeline.run_ccd_sn(image_list,num_threads,template_season,fermigrid)
     # Main survey
     else:
         # Here image_list is just the template image info
-        des_pipeline.run_ccd_survey(image_list,query_sci,num_threads,template_season,fermigrid,band,coadd_diff=offset,offset=offset)
+        image_list_all = des_pipeline.run_ccd_survey(image_list,query_sci,num_threads,template_season,fermigrid,band,coadd_diff=offset,offset=offset)
     # Save data to out_dir
-    b = np.vstack(map(list, image_list))
-    np.savetxt(os.path.join(tile_dir,'image_list.csv'), b, fmt=','.join(['%s']*b.shape[1]))
+    b = np.vstack(map(list, image_list_all))
+    np.savetxt(os.path.join(tile_dir,'image_list_all.csv'), b, fmt='\n'.join(['%s']*b.shape[1]))
     print('Compressing and transfering files.')
     # Compress and transfer files
     if fermigrid == True:
